@@ -1,0 +1,22 @@
+{
+  "name": "jira-standalone",
+  "version": "1.0.0",
+  "description": "Standalone Jira issue creator (CLI + Web UI)",
+  "license": "MIT",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "cli": "node src/cli.js",
+    "dev": "node src/server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "body-parser": "^1.20.2",
+    "axios": "^1.6.0",
+    "dotenv": "^16.0.3"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

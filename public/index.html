@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jira Standalone - Create Issues</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 600px;
+        width: 100%;
+        padding: 40px;
+      }
+
+      h1 {
+        color: #333;
+        margin-bottom: 10px;
+        font-size: 28px;
+      }
+
+      .subtitle {
+        color: #666;
+        margin-bottom: 30px;
+        font-size: 14px;
+      }
+
+      .tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #f0f0f0;
+      }
+
+      .tab-button {
+        padding: 10px 20px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-size: 16px;
+        color: #666;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s;
+      }
+
+      .tab-button.active {
+        color: #667eea;
+        border-bottom-color: #667eea;
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #333;
+        font-size: 14px;
+      }
+
+      input,
+      textarea,
+      select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        font-family: inherit;
+        transition: border-color 0.3s;
+      }
+
+      input:focus,
+      textarea:focus,
+      select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 100px;
+      }
+
+      .button-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 30px;
+      }
+
+      button {
+        flex: 1;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .btn-primary {
+        background: #667eea;
+        color: white;
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        background: #5568d3;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+      }
+
+      .btn-secondary {
+        background: #f0f0f0;
+        color: #333;
+      }
+
+      .btn-secondary:hover:not(:disabled) {
+        background: #e0e0e0;
+      }
+
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .alert {
+        padding: 12px 16px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        display: none;
+      }
+
+      .alert.show {
+        display: block;
+      }
+
+      .alert-success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+
+      .alert-error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+
+      .alert-info {
+        background: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+      }
+
+      .status {
+        font-size: 13px;
+        color: #666;
+        margin-top: 10px;
+      }
+
+      .spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-right: 8px;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      .success-message {
+        text-align: center;
+        padding: 20px;
+      }
+
+      .success-message a {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 10px 20px;
+        background: #667eea;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        transition: background 0.3s;
+      }
+
+      .success-message a:hover {
+        background: #5568d3;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>🚀 Jira Standalone</h1>
+      <p class="subtitle">Create and manage Jira issues directly from your browser</p>
+
+      <div class="tabs">
+        <button class="tab-button active" data-tab="config">Configure</button>
+        <button class="tab-button" data-tab="create">Create Issue</button>
+      </div>
+
+      <!-- Configure Tab -->
+      <div id="config" class="tab-content active">
+        <div id="config-alert" class="alert"></div>
+
+        <div class="form-group">
+          <label for="domain">Jira Domain</label>
+          <input
+            type="text"
+            id="domain"
+            placeholder="e.g., acme (for acme.atlassian.net)"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Atlassian Email</label>
+          <input
+            type="email"
+            id="email"
+            placeholder="your@atlassian.com"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="token">API Token</label>
+          <input
+            type="password"
+            id="token"
+            placeholder="Your Jira API token (from https://id.atlassian.com/manage-profile/security/api-tokens)"
+            autocomplete="off"
+          />
+          <p class="status">
+            Don't have a token?
+            <a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank">
+              Create one here
+            </a>
+          </p>
+        </div>
+
+        <div class="button-group">
+          <button class="btn-primary" id="btn-save-config">Save & Validate</button>
+          <button class="btn-secondary" id="btn-clear-config">Clear</button>
+        </div>
+      </div>
+
+      <!-- Create Issue Tab -->
+      <div id="create" class="tab-content">
+        <div id="create-alert" class="alert"></div>
+
+        <div class="form-group">
+          <label for="project-key">Project Key</label>
+          <input
+            type="text"
+            id="project-key"
+            placeholder="e.g., PROJ"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="summary">Issue Summary (Title)</label>
+          <input
+            type="text"
+            id="summary"
+            placeholder="Brief description of the issue"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea
+            id="description"
+            placeholder="Detailed description of the issue..."
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="issue-type">Issue Type</label>
+          <select id="issue-type">
+            <option value="">-- Select Type --</option>
+            <option value="Bug">Bug</option>
+            <option value="Task">Task</option>
+            <option value="Story">Story</option>
+            <option value="Epic">Epic</option>
+            <option value="Subtask">Subtask</option>
+          </select>
+        </div>
+
+        <div class="button-group">
+          <button class="btn-primary" id="btn-enhance-preview">Enhance & Preview</button>
+          <button class="btn-primary" id="btn-create-issue">Create Issue</button>
+          <button class="btn-secondary" id="btn-reset-form">Reset</button>
+        </div>
+
+        <div id="success-container"></div>
+      </div>
+    </div>
+
+    <script>
+      // Tab switching
+      document.querySelectorAll('.tab-button').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          const tabName = e.target.dataset.tab;
+
+          // Update active button
+          document.querySelectorAll('.tab-button').forEach((b) => b.classList.remove('active'));
+          e.target.classList.add('active');
+
+          // Update active content
+          document.querySelectorAll('.tab-content').forEach((c) => c.classList.remove('active'));
+          document.getElementById(tabName).classList.add('active');
+        });
+      });
+
+      // Alert helper
+      function showAlert(containerId, message, type) {
+        const alertEl = document.getElementById(containerId);
+        alertEl.textContent = message;
+        alertEl.className = `alert show alert-${type}`;
+        setTimeout(() => {
+          alertEl.classList.remove('show');
+        }, 5000);
+      }
+
+      // Load config on page load
+      async function loadConfig() {
+        try {
+          const res = await fetch('/api/config');
+          const config = await res.json();
+          if (config.domain) {
+            document.getElementById('domain').value = config.domain;
+            document.getElementById('email').value = config.email;
+          }
+        } catch (err) {
+          console.error('Error loading config:', err);
+        }
+      }
+
+      // Save config
+      document.getElementById('btn-save-config').addEventListener('click', async () => {
+        const domain = document.getElementById('domain').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const token = document.getElementById('token').value.trim();
+
+        if (!domain || !email || !token) {
+          showAlert('config-alert', '❌ Please fill in all fields', 'error');
+          return;
+        }
+
+        const btn = document.getElementById('btn-save-config');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span>Validating...';
+
+        try {
+          const res = await fetch('/api/config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ domain, email, apiToken: token }),
+          });
+
+          if (!res.ok) {
+            const error = await res.json();
+            throw new Error(error.error || 'Validation failed');
+          }
+
+          showAlert('config-alert', '✅ Configuration saved and validated!', 'success');
+          document.getElementById('token').value = '';
+        } catch (error) {
+          showAlert('config-alert', `❌ ${error.message}`, 'error');
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = 'Save & Validate';
+        }
+      });
+
+      // Clear config
+      document.getElementById('btn-clear-config').addEventListener('click', () => {
+        document.getElementById('domain').value = '';
+        document.getElementById('email').value = '';
+        document.getElementById('token').value = '';
+        showAlert('config-alert', 'Cleared', 'info');
+      });
+
+      // Create issue
+      document.getElementById('btn-enhance-preview').addEventListener('click', async () => {
+        const projectKey = document.getElementById('project-key').value.trim();
+        const summary = document.getElementById('summary').value.trim();
+        const description = document.getElementById('description').value.trim();
+
+        if (!summary && !description) {
+          showAlert('create-alert', '❌ Please provide title or description to enhance', 'error');
+          return;
+        }
+
+        const btn = document.getElementById('btn-enhance-preview');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span>Enhancing...';
+
+        try {
+          const res = await fetch('/api/enhance', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: summary, description }),
+          });
+
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({ error: 'Enhance failed' }));
+            throw new Error(err.error || 'Enhance failed');
+          }
+
+          const data = await res.json();
+          // Fill the fields with enhanced values for review
+          if (data.enhancedTitle) document.getElementById('summary').value = data.enhancedTitle;
+          if (data.enhancedDescription) document.getElementById('description').value = data.enhancedDescription;
+          showAlert('create-alert', `✅ Enhanced (${data.source}). Review and hit Create to submit.`, 'success');
+        } catch (error) {
+          showAlert('create-alert', `❌ ${error.message}`, 'error');
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = 'Enhance & Preview';
+        }
+      });
+
+      document.getElementById('btn-create-issue').addEventListener('click', async () => {
+        const projectKey = document.getElementById('project-key').value.trim();
+        const summary = document.getElementById('summary').value.trim();
+        const description = document.getElementById('description').value.trim();
+        const issueType = document.getElementById('issue-type').value;
+
+        if (!projectKey || !summary || !description || !issueType) {
+          showAlert('create-alert', '❌ Please fill in all fields', 'error');
+          return;
+        }
+
+        const btn = document.getElementById('btn-create-issue');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span>Creating...';
+
+        try {
+          const res = await fetch('/api/create-issue', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ projectKey, summary, description, issueType }),
+          });
+
+          if (!res.ok) {
+            const error = await res.json();
+            throw new Error(error.error || 'Failed to create issue');
+          }
+
+          const { issue } = await res.json();
+
+          // Show success
+          document.getElementById('success-container').innerHTML = `
+            <div class="success-message">
+              <h3>✅ Issue Created Successfully!</h3>
+              <p><strong>Key:</strong> ${issue.key}</p>
+              <p><strong>ID:</strong> ${issue.id}</p>
+              <a href="${issue.url}" target="_blank">Open in Jira →</a>
+            </div>
+          `;
+
+          // Reset form
+          document.getElementById('project-key').value = '';
+          document.getElementById('summary').value = '';
+          document.getElementById('description').value = '';
+          document.getElementById('issue-type').value = '';
+        } catch (error) {
+          showAlert('create-alert', `❌ ${error.message}`, 'error');
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = 'Create Issue';
+        }
+      });
+
+      // Reset form
+      document.getElementById('btn-reset-form').addEventListener('click', () => {
+        document.getElementById('project-key').value = '';
+        document.getElementById('summary').value = '';
+        document.getElementById('description').value = '';
+        document.getElementById('issue-type').value = '';
+        document.getElementById('success-container').innerHTML = '';
+      });
+
+      // Load config on page load
+      loadConfig();
+    </script>
+  </body>
+</html>
