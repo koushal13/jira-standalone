@@ -12,7 +12,11 @@ A free, open-source tool that revolutionizes how you create Jira issues. Write y
 
 **See the tool in action!** 
 
-https://github.com/koushal13/jira-standalone/assets/demo-video.mp4
+<video width="100%" controls>
+  <source src="https://github.com/koushal13/jira-standalone/raw/main/Demo.mp4" type="video/mp4">
+  <source src="https://github.com/koushal13/jira-standalone/raw/main/Demo.mov" type="video/quicktime">
+  Your browser does not support the video tag. <a href="https://github.com/koushal13/jira-standalone/raw/main/Demo.mp4">Download the demo video</a>.
+</video>
 
 *The video above shows the complete workflow from idea enhancement to Jira issue creation*
 
