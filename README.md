@@ -11,9 +11,10 @@ A free, open-source tool that revolutionizes how you create Jira issues. Write y
 ## 🎬 Demo Video
 
 **See the tool in action!** 
-- **[📹 Watch Demo Video](./Demo.mov)** - Complete walkthrough showing AI-powered story enhancement and Jira integration
 
-*Click the link above to download and watch the demo video in your preferred media player.*
+https://github.com/koushal13/jira-standalone/assets/demo-video.mp4
+
+*The video above shows the complete workflow from idea enhancement to Jira issue creation*
 
 ### Demo Highlights
 - 🎯 **AI Story Enhancement**: See how raw ideas become professional user stories
@@ -22,7 +23,7 @@ A free, open-source tool that revolutionizes how you create Jira issues. Write y
 - ✨ **Clean Formatting**: HTML-free, professional descriptions
 - 🚀 **End-to-End Flow**: From idea to published Jira issue in seconds
 
-> **Note**: If the video doesn't play in your browser, right-click and "Save Link As" to download it to your computer.
+> **Alternative**: If the video doesn't load, you can [download Demo.mp4](./Demo.mp4) or [Demo.mov](./Demo.mov)
 
 ## 🌟 Why This Tool?
 
