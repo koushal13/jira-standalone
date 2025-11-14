@@ -12,11 +12,7 @@ A free, open-source tool that revolutionizes how you create Jira issues. Write y
 
 **See the tool in action!** 
 
-<video width="100%" controls>
-  <source src="https://github.com/koushal13/jira-standalone/raw/main/Demo.mp4" type="video/mp4">
-  <source src="https://github.com/koushal13/jira-standalone/raw/main/Demo.mov" type="video/quicktime">
-  Your browser does not support the video tag. <a href="https://github.com/koushal13/jira-standalone/raw/main/Demo.mp4">Download the demo video</a>.
-</video>
+https://private-user-images.githubusercontent.com/21079636/514474790-ca78a712-035d-4d75-a7d1-9b38395d8e1c.mov?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjMxMzI5MjAsIm5iZiI6MTc2MzEzMjYyMCwicGF0aCI6Ii8yMTA3OTYzNi81MTQ0NzQ3OTAtY2E3OGE3MTItMDM1ZC00ZDc1LWE3ZDEtOWIzODM5NWQ4ZTFjLm1vdj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTExMTQlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUxMTE0VDE1MDM0MFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWJlNjA2MzgzYjJiYjUxNDlkZGMxZTY2ZGFjNzI4MWZmNjgwMzY2MTE1MmJmNTYxMDUwOGZkYjNiNjI2OTM0NjUmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.EqxzAILoYTzPpjW7ZloiiKWm-8Eo5ErE8KZTrCuq7Bs
 
 *The video above shows the complete workflow from idea enhancement to Jira issue creation*
 
