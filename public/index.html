@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Jira Standalone - Create Issues</title>
+    <title>Jira AI Story Creator - Free & Open Source</title>
     <style>
       * {
         margin: 0;
@@ -15,86 +15,193 @@
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         padding: 20px;
       }
 
-      .container {
+      .main-container {
+        max-width: 100%;
+        margin: 0;
         background: white;
-        border-radius: 12px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        max-width: 600px;
-        width: 100%;
-        padding: 40px;
+        border-radius: 0;
+        box-shadow: none;
+        overflow: hidden;
+        min-height: 100vh;
       }
 
-      h1 {
-        color: #333;
-        margin-bottom: 10px;
-        font-size: 28px;
+      .header {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        color: white;
+        padding: 30px 40px;
+        text-align: center;
+        position: relative;
       }
 
-      .subtitle {
-        color: #666;
-        margin-bottom: 30px;
+      .header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+        opacity: 0.1;
+      }
+
+      .header-content {
+        position: relative;
+        z-index: 1;
+      }
+
+      .header h1 {
+        font-size: 36px;
+        margin-bottom: 8px;
+        font-weight: 700;
+      }
+
+      .header .tagline {
+        font-size: 18px;
+        margin-bottom: 15px;
+        opacity: 0.9;
+      }
+
+      .header .description {
         font-size: 14px;
+        opacity: 0.8;
+        max-width: 600px;
+        margin: 0 auto 20px;
+        line-height: 1.5;
       }
 
-      .tabs {
+      .badges {
         display: flex;
-        gap: 10px;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+
+      .badge {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .container {
+        padding: 40px 60px;
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
+      }
+
+      .workflow-indicator {
+        display: flex;
+        justify-content: center;
         margin-bottom: 30px;
-        border-bottom: 2px solid #f0f0f0;
+        gap: 20px;
+      }
+      
+      .text-center {
+        text-align: center;
+      }
+      
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .container {
+          padding: 20px 30px;
+        }
+        
+        input, textarea, select {
+          font-size: 16px; /* Prevents zoom on iOS */
+        }
+        
+        textarea {
+          min-height: 180px;
+        }
       }
 
-      .tab-button {
-        padding: 10px 20px;
-        border: none;
-        background: none;
-        cursor: pointer;
-        font-size: 16px;
+      .step {
+        display: flex;
+        align-items: center;
+        font-size: 13px;
         color: #666;
-        border-bottom: 3px solid transparent;
-        transition: all 0.3s;
       }
 
-      .tab-button.active {
+      .step.active {
         color: #667eea;
-        border-bottom-color: #667eea;
+        font-weight: 600;
       }
 
-      .tab-content {
+      .step-number {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 8px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .step.active .step-number {
+        background: #667eea;
+        color: white;
+      }
+
+      .step.completed .step-number {
+        background: #27ae60;
+        color: white;
+      }
+
+      .section {
         display: none;
+        animation: fadeIn 0.3s ease-in;
       }
 
-      .tab-content.active {
+      .section.active {
         display: block;
       }
 
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
       .form-group {
-        margin-bottom: 20px;
+        margin-bottom: 25px;
+        width: 100%;
       }
 
       label {
         display: block;
         font-weight: 600;
-        margin-bottom: 6px;
-        color: #333;
+        margin-bottom: 8px;
+        color: #2c3e50;
         font-size: 14px;
+        position: relative;
+      }
+
+      .required::after {
+        content: '*';
+        color: #e74c3c;
+        margin-left: 4px;
       }
 
       input,
       textarea,
       select {
         width: 100%;
-        padding: 10px 12px;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        font-size: 14px;
+        padding: 14px 16px;
+        border: 2px solid #e1e8ed;
+        border-radius: 8px;
+        font-size: 15px;
         font-family: inherit;
-        transition: border-color 0.3s;
+        transition: all 0.3s ease;
+        background: #fafbfc;
       }
 
       input:focus,
@@ -102,98 +209,131 @@
       select:focus {
         outline: none;
         border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        background: white;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
       }
 
-      textarea {
+      .story-input {
+        min-height: 180px;
         resize: vertical;
-        min-height: 100px;
+        font-family: 'SF Mono', Monaco, Consolas, monospace;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .enhanced-description {
+        min-height: 120px;
+        resize: vertical;
       }
 
       .button-group {
         display: flex;
-        gap: 10px;
+        gap: 15px;
         margin-top: 30px;
+        flex-wrap: wrap;
+        width: 100%;
       }
 
       button {
         flex: 1;
-        padding: 12px 24px;
+        min-width: 140px;
+        padding: 14px 20px;
         border: none;
-        border-radius: 6px;
-        font-size: 16px;
+        border-radius: 8px;
+        font-size: 15px;
         font-weight: 600;
         cursor: pointer;
-        transition: all 0.3s;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
       }
 
       .btn-primary {
-        background: #667eea;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
       }
 
       .btn-primary:hover:not(:disabled) {
-        background: #5568d3;
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
       }
 
       .btn-secondary {
-        background: #f0f0f0;
-        color: #333;
+        background: #f8f9fa;
+        color: #495057;
+        border: 2px solid #e9ecef;
       }
 
       .btn-secondary:hover:not(:disabled) {
-        background: #e0e0e0;
+        background: #e9ecef;
+        border-color: #dee2e6;
+      }
+
+      .btn-success {
+        background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        color: white;
+      }
+
+      .btn-danger {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
       }
 
       button:disabled {
         opacity: 0.6;
         cursor: not-allowed;
+        transform: none !important;
       }
 
       .alert {
-        padding: 12px 16px;
-        border-radius: 6px;
-        margin-bottom: 20px;
+        padding: 16px 20px;
+        border-radius: 8px;
+        margin-bottom: 25px;
         font-size: 14px;
         display: none;
+        border-left: 4px solid;
       }
 
       .alert.show {
         display: block;
+        animation: slideIn 0.3s ease-out;
+      }
+
+      @keyframes slideIn {
+        from { opacity: 0; transform: translateX(-20px); }
+        to { opacity: 1; transform: translateX(0); }
       }
 
       .alert-success {
         background: #d4edda;
         color: #155724;
-        border: 1px solid #c3e6cb;
+        border-left-color: #28a745;
       }
 
       .alert-error {
         background: #f8d7da;
         color: #721c24;
-        border: 1px solid #f5c6cb;
+        border-left-color: #dc3545;
       }
 
       .alert-info {
-        background: #d1ecf1;
+        background: #cce7ff;
         color: #0c5460;
-        border: 1px solid #bee5eb;
+        border-left-color: #17a2b8;
       }
 
-      .status {
-        font-size: 13px;
-        color: #666;
-        margin-top: 10px;
+      .alert-warning {
+        background: #fff3cd;
+        color: #856404;
+        border-left-color: #ffc107;
       }
 
       .spinner {
         display: inline-block;
-        width: 16px;
-        height: 16px;
-        border: 2px solid #f3f3f3;
-        border-top: 2px solid #667eea;
+        width: 18px;
+        height: 18px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top: 2px solid white;
         border-radius: 50%;
         animation: spin 1s linear infinite;
         margin-right: 8px;
@@ -204,326 +344,1309 @@
         100% { transform: rotate(360deg); }
       }
 
-      .success-message {
+      .success-container {
         text-align: center;
-        padding: 20px;
+        padding: 30px 20px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 12px;
+        margin-top: 25px;
       }
 
-      .success-message a {
+      .success-container h3 {
+        color: #28a745;
+        margin-bottom: 15px;
+        font-size: 24px;
+      }
+
+      .jira-link {
         display: inline-block;
-        margin-top: 10px;
-        padding: 10px 20px;
-        background: #667eea;
+        margin-top: 15px;
+        padding: 12px 24px;
+        background: linear-gradient(135deg, #0052cc 0%, #2684ff 100%);
         color: white;
         text-decoration: none;
-        border-radius: 6px;
-        transition: background 0.3s;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
       }
 
-      .success-message a:hover {
-        background: #5568d3;
+      .jira-link:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 82, 204, 0.4);
+      }
+
+      .config-link {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        text-decoration: none;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .config-link:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      .processing-log {
+        background: #1e1e1e;
+        color: #00ff00;
+        padding: 20px;
+        border-radius: 8px;
+        font-family: 'SF Mono', Monaco, Consolas, monospace;
+        font-size: 12px;
+        max-height: 300px;
+        overflow-y: auto;
+        margin-top: 15px;
+        display: block;
+        border: 1px solid #333;
+        opacity: 1;
+      }
+
+      .processing-log.show {
+        display: block;
+        animation: fadeIn 0.3s ease-in;
+      }
+
+      .log-entry {
+        margin-bottom: 5px;
+        opacity: 0;
+        animation: logAppear 0.3s ease-out forwards;
+      }
+
+      @keyframes logAppear {
+        to { opacity: 1; }
+      }
+
+      .toggle-logs {
+        background: none;
+        border: 1px solid #dee2e6;
+        color: #6c757d;
+        padding: 6px 12px;
+        font-size: 12px;
+        border-radius: 4px;
+        margin-top: 10px;
+      }
+
+      .env-status {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        font-size: 13px;
+        text-align: center;
+      }
+      
+      .ollama-status {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        font-size: 13px;
+        text-align: center;
+      }
+      
+      .ollama-status.connected {
+        background: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+      }
+      
+      .ollama-status.disconnected {
+        background: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+      }
+      
+      .status-checking {
+        color: #856404;
+      }
+      
+      .retry-btn {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 5px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        margin-left: 10px;
+        cursor: pointer;
+      }
+      
+      .retry-btn:hover {
+        background: #0056b3;
+      }
+
+      .env-status.configured {
+        background: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+      }
+
+      .env-status.not-configured {
+        background: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+      }
+
+      .project-selector {
+        position: relative;
+      }
+
+      .project-search {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid #e1e8ed;
+        border-radius: 8px 8px 0 0;
+        font-size: 15px;
+        font-family: inherit;
+        background: #fafbfc;
+        transition: all 0.3s ease;
+      }
+
+      .project-search:focus {
+        outline: none;
+        border-color: #667eea;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+      }
+
+      .project-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 2px solid #667eea;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        max-height: 300px;
+        overflow-y: auto;
+        z-index: 1000;
+        display: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .project-dropdown.show {
+        display: block;
+      }
+
+      .project-option {
+        padding: 12px 16px;
+        cursor: pointer;
+        border-bottom: 1px solid #f0f0f0;
+        transition: background 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .project-option:hover {
+        background: #f8f9fa;
+      }
+
+      .project-option.selected {
+        background: #667eea;
+        color: white;
+      }
+
+      .project-avatar {
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
+        background: #e1e8ed;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: bold;
+        color: #666;
+      }
+
+      .project-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .project-name {
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      .project-key {
+        font-size: 12px;
+        opacity: 0.8;
+        font-family: 'SF Mono', Monaco, Consolas, monospace;
+        background: rgba(0, 0, 0, 0.1);
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-right: 8px;
+      }
+
+      .project-meta {
+        font-size: 11px;
+        opacity: 0.7;
+        margin-top: 2px;
+      }
+
+      .project-option.selected .project-key {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .no-projects {
+        padding: 20px;
+        text-align: center;
+        color: #666;
+        font-style: italic;
+      }
+
+      .loading-projects {
+        padding: 20px;
+        text-align: center;
+        color: #667eea;
+      }
+
+      .project-refresh {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #666;
+        cursor: pointer;
+        font-size: 16px;
+        padding: 4px;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+      }
+
+      .project-refresh:hover {
+        background: #f0f0f0;
+        color: #667eea;
+      }
+
+      .project-refresh.loading {
+        animation: spin 1s linear infinite;
+      }
+        .main-container {
+          margin: 10px;
+        }
+        
+        .container {
+          padding: 25px;
+        }
+        
+        .header {
+          padding: 25px 25px;
+        }
+        
+        .header h1 {
+          font-size: 28px;
+        }
+        
+        .workflow-indicator {
+          flex-direction: column;
+          gap: 10px;
+        }
+        
+        .button-group {
+          flex-direction: column;
+        }
+        
+        button {
+          flex: none;
+        }
       }
     </style>
   </head>
 
   <body>
-    <div class="container">
-      <h1>🚀 Jira Standalone</h1>
-      <p class="subtitle">Create and manage Jira issues directly from your browser</p>
-
-      <div class="tabs">
-        <button class="tab-button active" data-tab="config">Configure</button>
-        <button class="tab-button" data-tab="create">Create Issue</button>
-      </div>
-
-      <!-- Configure Tab -->
-      <div id="config" class="tab-content active">
-        <div id="config-alert" class="alert"></div>
-
-        <div class="form-group">
-          <label for="domain">Jira Domain</label>
-          <input
-            type="text"
-            id="domain"
-            placeholder="e.g., acme (for acme.atlassian.net)"
-            autocomplete="off"
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="email">Atlassian Email</label>
-          <input
-            type="email"
-            id="email"
-            placeholder="your@atlassian.com"
-            autocomplete="off"
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="token">API Token</label>
-          <input
-            type="password"
-            id="token"
-            placeholder="Your Jira API token (from https://id.atlassian.com/manage-profile/security/api-tokens)"
-            autocomplete="off"
-          />
-          <p class="status">
-            Don't have a token?
-            <a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank">
-              Create one here
-            </a>
+    <div class="main-container">
+      <!-- Header Section -->
+      <div class="header">
+        <a href="#" class="config-link" id="config-toggle">⚙️ Override Config</a>
+        <button class="config-link" id="privacy-toggle" style="right: 160px; background: rgba(255,255,255,0.15);">
+          🔒 Privacy ON
+        </button>
+        <div class="header-content">
+          <h1>🤖 Jira AI Story Creator</h1>
+          <p class="tagline">Transform Raw Ideas into Professional Jira Stories</p>
+          <p class="description">
+            Free, open-source tool that uses AI to automatically enhance and format your rough story ideas into 
+            professional Jira issues with proper structure, context, and acceptance criteria.
           </p>
-        </div>
-
-        <div class="button-group">
-          <button class="btn-primary" id="btn-save-config">Save & Validate</button>
-          <button class="btn-secondary" id="btn-clear-config">Clear</button>
+          <div class="badges">
+            <span class="badge">🆓 100% Free</span>
+            <span class="badge">🌐 Open Source</span>
+            <span class="badge">🤖 AI-Enhanced</span>
+            <span class="badge">⚡ Local & Secure</span>
+            <span class="badge">🔧 CLI + Web UI</span>
+          </div>
         </div>
       </div>
 
-      <!-- Create Issue Tab -->
-      <div id="create" class="tab-content">
-        <div id="create-alert" class="alert"></div>
-
-        <div class="form-group">
-          <label for="project-key">Project Key</label>
-          <input
-            type="text"
-            id="project-key"
-            placeholder="e.g., PROJ"
-            autocomplete="off"
-          />
+      <div class="container">
+        <!-- Environment Status -->
+        <div class="env-status" id="env-status">
+          <strong>🔧 Configuration Status:</strong> <span id="env-message">Checking...</span>
+        </div>
+        
+        <!-- Ollama Status Indicator -->
+        <div class="ollama-status" id="ollama-status">
+          <strong>🤖 AI Engine (Ollama):</strong> 
+          <span id="ollama-message" class="status-checking">Checking Ollama connection...</span>
+          <button id="retry-ollama" class="retry-btn" style="display: none;">Retry Connection</button>
         </div>
 
-        <div class="form-group">
-          <label for="summary">Issue Summary (Title)</label>
-          <input
-            type="text"
-            id="summary"
-            placeholder="Brief description of the issue"
-            autocomplete="off"
-          />
+        <!-- Workflow Indicator -->
+        <div class="workflow-indicator">
+          <div class="step active" id="step-input">
+            <div class="step-number">1</div>
+            <span>Write Story</span>
+          </div>
+          <div class="step" id="step-enhance">
+            <div class="step-number">2</div>
+            <span>AI Enhance</span>
+          </div>
+          <div class="step" id="step-review">
+            <div class="step-number">3</div>
+            <span>Review & Configure</span>
+          </div>
+          <div class="step" id="step-create">
+            <div class="step-number">4</div>
+            <span>Create Issue</span>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label for="description">Description</label>
-          <textarea
-            id="description"
-            placeholder="Detailed description of the issue..."
-          ></textarea>
+        <!-- Step 1: Story Input -->
+        <div class="section active" id="section-input">
+          <div id="input-alert" class="alert"></div>
+          
+          <div class="form-group">
+            <label for="raw-story" class="required">Your Raw Story Idea</label>
+            <textarea 
+              id="raw-story" 
+              class="story-input"
+              placeholder="Describe your feature, bug fix, or improvement in natural language:
+
+Examples:
+• 'Fix the login bug where users can't authenticate with SSO'
+• 'Add a password reset option for customers who forget their password'
+• 'Create a dashboard where managers can view team performance metrics'
+• 'Users need to be able to export their data as PDF files'
+• 'The mobile app crashes when uploading large images - need to fix this'
+• 'Implement two-factor authentication for admin accounts'
+
+Don't worry about structure or format - just describe what you need. The AI will transform it into a professional user story with:
+→ Proper 'As a [user], I want [capability], so that [benefit]' format
+→ Clear description and context
+→ Detailed acceptance criteria with Given/When/Then scenarios
+→ Professional language and Jira formatting"
+              autocomplete="off"
+              rows="12"
+              style="min-height: 300px;"
+            ></textarea>
+          </div>
+
+        <button class="btn-primary" id="btn-enhance" style="width: 100%; padding: 18px; margin-bottom: 15px;">
+          🤖 Enhance with AI
+        </button>
+
+        <div style="text-align: center; margin-top: 10px;">
+            <button class="toggle-logs" id="toggle-processing-logs">
+              👁️ Hide Processing Details
+            </button>
+          </div>
+          
+          <div class="processing-log" id="processing-log"></div>
         </div>
 
-        <div class="form-group">
-          <label for="issue-type">Issue Type</label>
-          <select id="issue-type">
-            <option value="">-- Select Type --</option>
-            <option value="Bug">Bug</option>
-            <option value="Task">Task</option>
-            <option value="Story">Story</option>
-            <option value="Epic">Epic</option>
-            <option value="Subtask">Subtask</option>
-          </select>
+        <!-- Step 2: Review & Configure -->
+        <div class="section" id="section-review">
+          <div id="review-alert" class="alert"></div>
+          
+          <div class="form-group">
+            <label for="project-search" class="required">Project</label>
+            <div class="project-selector">
+              <input
+                type="text"
+                id="project-search"
+                class="project-search"
+                placeholder="Search or type project name..."
+                autocomplete="off"
+              />
+              <button type="button" class="project-refresh" id="refresh-projects" title="Refresh projects">
+                🔄
+              </button>
+              <div class="project-dropdown" id="project-dropdown">
+                <div class="loading-projects">Loading projects...</div>
+              </div>
+            </div>
+            <input type="hidden" id="project-key" />
+          </div>
+
+          <div class="form-group">
+            <label>📝 Your Original Input</label>
+            <div id="original-input" style="background: #f8f9fa; padding: 12px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; color: #495057; border-left: 4px solid #667eea;"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="enhanced-summary">Generated Summary (Title)</label>
+            <input
+              type="text"
+              id="enhanced-summary"
+              readonly
+              style="background: #f8f9fa; color: #495057; width: 100%; box-sizing: border-box;"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="enhanced-description">Generated Description</label>
+            <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
+              ✨ AI-generated professional user story with standard format: User Story → Description → Acceptance Criteria
+            </p>
+                        <textarea
+              id="enhanced-description"
+              class="enhanced-description"
+              readonly
+              style="background: #f8f9fa; color: #495057; min-height: 350px;"
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="issue-type" class="required">Issue Type</label>
+            <select id="issue-type">
+              <option value="">-- Select Issue Type --</option>
+              <option value="Story">Story</option>
+              <option value="Bug">Bug</option>
+              <option value="Task">Task</option>
+              <option value="Epic">Epic</option>
+              <option value="Subtask">Subtask</option>
+              <option value="Improvement">Improvement</option>
+            </select>
+          </div>
+
+          <div class="button-group">
+            <button class="btn-secondary" id="btn-back-to-input">
+              ← Edit Story
+            </button>
+            <button class="btn-success" id="btn-create-issue">
+              ✅ Create Jira Issue
+            </button>
+            <button class="btn-danger" id="btn-reset">
+              🗑️ Reset All
+            </button>
+          </div>
         </div>
 
-        <div class="button-group">
-          <button class="btn-primary" id="btn-enhance-preview">Enhance & Preview</button>
-          <button class="btn-primary" id="btn-create-issue">Create Issue</button>
-          <button class="btn-secondary" id="btn-reset-form">Reset</button>
+        <!-- Step 3: Success -->
+        <div class="section" id="section-success">
+          <div class="success-container" id="success-container">
+            <!-- Success content will be inserted here -->
+          </div>
+          
+          <div class="button-group">
+            <button class="btn-secondary" id="btn-create-another">
+              📝 Create Another Story
+            </button>
+          </div>
         </div>
 
-        <div id="success-container"></div>
+        <!-- Configuration Override Section (Hidden by default) -->
+        <div class="section" id="section-config" style="display: none;">
+          <h3>⚙️ Configuration Override</h3>
+          <p style="color: #666; margin-bottom: 25px;">
+            Override environment variables for this session. Changes are temporary and not saved.
+          </p>
+          
+          <div id="config-alert" class="alert"></div>
+
+          <div class="form-group">
+            <label for="domain">Jira Domain</label>
+            <input
+              type="text"
+              id="domain"
+              placeholder="e.g., acme (for acme.atlassian.net)"
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="email">Atlassian Email</label>
+            <input
+              type="email"
+              id="email"
+              placeholder="your@atlassian.com"
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="token">API Token</label>
+            <input
+              type="password"
+              id="token"
+              placeholder="Your Jira API token"
+              autocomplete="off"
+            />
+            <p style="font-size: 12px; color: #666; margin-top: 5px;">
+              Get your token: <a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank">Create API Token</a>
+            </p>
+          </div>
+
+          <div class="button-group">
+            <button class="btn-primary" id="btn-save-config">Save & Validate</button>
+            <button class="btn-secondary" id="btn-cancel-config">Cancel</button>
+          </div>
+        </div>
       </div>
     </div>
 
     <script>
-      // Tab switching
-      document.querySelectorAll('.tab-button').forEach((btn) => {
-        btn.addEventListener('click', (e) => {
-          const tabName = e.target.dataset.tab;
+      // Global state management
+      const AppState = {
+        currentStep: 'input',
+        configOverridden: false,
+        processing: false,
+        enhancedData: null,
+        projects: [],
+        selectedProject: null,
+        privacyMode: true // Enable privacy masking by default
+      };
 
-          // Update active button
-          document.querySelectorAll('.tab-button').forEach((b) => b.classList.remove('active'));
-          e.target.classList.add('active');
-
-          // Update active content
-          document.querySelectorAll('.tab-content').forEach((c) => c.classList.remove('active'));
-          document.getElementById(tabName).classList.add('active');
-        });
-      });
-
-      // Alert helper
-      function showAlert(containerId, message, type) {
+      // Utility functions
+      function showAlert(containerId, message, type, duration = 5000) {
         const alertEl = document.getElementById(containerId);
-        alertEl.textContent = message;
+        alertEl.innerHTML = message;
         alertEl.className = `alert show alert-${type}`;
-        setTimeout(() => {
-          alertEl.classList.remove('show');
-        }, 5000);
+        
+        if (duration > 0) {
+          setTimeout(() => {
+            alertEl.classList.remove('show');
+          }, duration);
+        }
+        
+        // Scroll to alert
+        alertEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
 
-      // Load config on page load
-      async function loadConfig() {
-        try {
-          const res = await fetch('/api/config');
-          const config = await res.json();
-          if (config.domain) {
-            document.getElementById('domain').value = config.domain;
-            document.getElementById('email').value = config.email;
-          }
-        } catch (err) {
-          console.error('Error loading config:', err);
+      function addProcessingLog(message, type = 'info') {
+        const logEl = document.getElementById('processing-log');
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        
+        const timestamp = new Date().toLocaleTimeString();
+        const icon = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+        
+        entry.innerHTML = `[${timestamp}] ${icon} ${message}`;
+        logEl.appendChild(entry);
+        logEl.scrollTop = logEl.scrollHeight;
+      }
+
+      function toggleProcessingLogs() {
+        const logEl = document.getElementById('processing-log');
+        const toggleBtn = document.getElementById('toggle-processing-logs');
+        
+        if (logEl.style.display === 'none') {
+          logEl.style.display = 'block';
+          toggleBtn.textContent = '👨‍💻 Hide Processing Details';
+          addProcessingLog('Processing logs visible. Details will appear here during enhancement.');
+        } else {
+          logEl.style.display = 'none';
+          toggleBtn.textContent = '👨‍💻 Show Processing Details';
         }
       }
 
-      // Save config
-      document.getElementById('btn-save-config').addEventListener('click', async () => {
-        const domain = document.getElementById('domain').value.trim();
-        const email = document.getElementById('email').value.trim();
-        const token = document.getElementById('token').value.trim();
-
-        if (!domain || !email || !token) {
-          showAlert('config-alert', '❌ Please fill in all fields', 'error');
-          return;
-        }
-
-        const btn = document.getElementById('btn-save-config');
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner"></span>Validating...';
-
-        try {
-          const res = await fetch('/api/config', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ domain, email, apiToken: token }),
-          });
-
-          if (!res.ok) {
-            const error = await res.json();
-            throw new Error(error.error || 'Validation failed');
+      function updateWorkflowStep(step) {
+        AppState.currentStep = step;
+        
+        // Update step indicators
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active', 'completed'));
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        
+        const steps = ['input', 'enhance', 'review', 'create'];
+        const currentIndex = steps.indexOf(step);
+        
+        steps.forEach((s, index) => {
+          const stepEl = document.getElementById(`step-${s}`);
+          if (index < currentIndex) {
+            stepEl.classList.add('completed');
+          } else if (index === currentIndex) {
+            stepEl.classList.add('active');
           }
+        });
+        
+        // Show appropriate section
+        const sectionMap = {
+          'input': 'section-input',
+          'enhance': 'section-input',
+          'review': 'section-review',
+          'create': 'section-success'
+        };
+        
+        document.getElementById(sectionMap[step]).classList.add('active');
+      }
 
-          showAlert('config-alert', '✅ Configuration saved and validated!', 'success');
-          document.getElementById('token').value = '';
-        } catch (error) {
-          showAlert('config-alert', `❌ ${error.message}`, 'error');
-        } finally {
-          btn.disabled = false;
-          btn.innerHTML = 'Save & Validate';
-        }
-      });
-
-      // Clear config
-      document.getElementById('btn-clear-config').addEventListener('click', () => {
-        document.getElementById('domain').value = '';
-        document.getElementById('email').value = '';
-        document.getElementById('token').value = '';
-        showAlert('config-alert', 'Cleared', 'info');
-      });
-
-      // Create issue
-      document.getElementById('btn-enhance-preview').addEventListener('click', async () => {
+      function validateForm() {
         const projectKey = document.getElementById('project-key').value.trim();
-        const summary = document.getElementById('summary').value.trim();
-        const description = document.getElementById('description').value.trim();
-
-        if (!summary && !description) {
-          showAlert('create-alert', '❌ Please provide title or description to enhance', 'error');
-          return;
+        const issueType = document.getElementById('issue-type').value;
+        
+        if (!projectKey) {
+          showAlert('review-alert', '❌ Please select a project first', 'error');
+          document.getElementById('project-search').focus();
+          return false;
         }
+        
+        if (!issueType) {
+          showAlert('review-alert', '❌ Issue Type is required', 'error');
+          document.getElementById('issue-type').focus();
+          return false;
+        }
+        
+        return true;
+      }
 
-        const btn = document.getElementById('btn-enhance-preview');
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner"></span>Enhancing...';
+      // Project management functions
+      async function loadProjects(showSpinner = false) {
+        const refreshBtn = document.getElementById('refresh-projects');
+        const dropdown = document.getElementById('project-dropdown');
+        
+        if (showSpinner) {
+          refreshBtn.classList.add('loading');
+        }
+        
+        dropdown.innerHTML = '<div class="loading-projects">Loading projects...</div>';
+        addProcessingLog('Fetching accessible Jira projects...');
 
         try {
-          const res = await fetch('/api/enhance', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title: summary, description }),
-          });
-
+          const res = await fetch('/api/projects');
+          
           if (!res.ok) {
-            const err = await res.json().catch(() => ({ error: 'Enhance failed' }));
-            throw new Error(err.error || 'Enhance failed');
+            const error = await res.json().catch(() => ({ error: 'Failed to load projects' }));
+            throw new Error(error.error);
           }
 
           const data = await res.json();
-          // Fill the fields with enhanced values for review
-          if (data.enhancedTitle) document.getElementById('summary').value = data.enhancedTitle;
-          if (data.enhancedDescription) document.getElementById('description').value = data.enhancedDescription;
-          showAlert('create-alert', `✅ Enhanced (${data.source}). Review and hit Create to submit.`, 'success');
+          AppState.projects = data.projects || [];
+          
+          addProcessingLog(`Found ${AppState.projects.length} accessible projects`, 'success');
+          renderProjects(AppState.projects);
+
         } catch (error) {
-          showAlert('create-alert', `❌ ${error.message}`, 'error');
+          addProcessingLog(`Failed to load projects: ${error.message}`, 'error');
+          dropdown.innerHTML = `
+            <div class="no-projects">
+              ❌ Failed to load projects<br>
+              <small>${error.message}</small>
+            </div>
+          `;
         } finally {
-          btn.disabled = false;
-          btn.innerHTML = 'Enhance & Preview';
+          refreshBtn.classList.remove('loading');
         }
-      });
+      }
 
-      document.getElementById('btn-create-issue').addEventListener('click', async () => {
-        const projectKey = document.getElementById('project-key').value.trim();
-        const summary = document.getElementById('summary').value.trim();
-        const description = document.getElementById('description').value.trim();
-        const issueType = document.getElementById('issue-type').value;
-
-        if (!projectKey || !summary || !description || !issueType) {
-          showAlert('create-alert', '❌ Please fill in all fields', 'error');
+      function renderProjects(projects) {
+        const dropdown = document.getElementById('project-dropdown');
+        
+        if (projects.length === 0) {
+          dropdown.innerHTML = '<div class="no-projects">No accessible projects found</div>';
           return;
         }
 
-        const btn = document.getElementById('btn-create-issue');
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner"></span>Creating...';
+        dropdown.innerHTML = projects.map(project => `
+          <div class="project-option" data-project-key="${project.key}" data-project-name="${project.name}">
+            <div class="project-avatar" style="background-color: ${getProjectColor(project.key)}">
+              ${project.key.substring(0, 2).toUpperCase()}
+            </div>
+            <div class="project-info">
+              <div class="project-name">
+                <span class="project-key">${project.key}</span>
+                ${project.name}
+              </div>
+              <div class="project-meta">
+                ${project.projectTypeKey} • Lead: ${project.lead} • ${project.category}
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+        // Add click handlers
+        dropdown.querySelectorAll('.project-option').forEach(option => {
+          option.addEventListener('click', () => {
+            selectProject(option.dataset.projectKey, option.dataset.projectName);
+          });
+        });
+      }
+
+      function selectProject(key, name) {
+        AppState.selectedProject = { key, name };
+        document.getElementById('project-key').value = key;
+        document.getElementById('project-search').value = `${key} - ${name}`;
+        document.getElementById('project-dropdown').classList.remove('show');
+        
+        const logKey = AppState.privacyMode ? key.substring(0, 2) + '***' : key;
+        const logName = AppState.privacyMode ? name.substring(0, 5) + '***' : name;
+        addProcessingLog(`Selected project: ${logKey} (${logName})`);
+      }
+
+      function filterProjects(searchTerm) {
+        const filtered = AppState.projects.filter(project => 
+          project.key.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          project.category.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        renderProjects(filtered);
+      }
+
+      function getProjectColor(projectKey) {
+        // Generate consistent color based on project key
+        let hash = 0;
+        for (let i = 0; i < projectKey.length; i++) {
+          hash = projectKey.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        
+        const hue = Math.abs(hash) % 360;
+        return `hsl(${hue}, 65%, 75%)`;
+      }
+      // Configuration management
+      async function checkEnvConfig() {
+        addProcessingLog('Checking environment configuration...');
+        
+        try {
+          const res = await fetch('/api/config');
+          const config = await res.json();
+          
+          const statusEl = document.getElementById('env-status');
+          const messageEl = document.getElementById('env-message');
+          
+          if (config.domain && config.domain !== 'your-domain' && config.email && config.hasToken) {
+            statusEl.className = 'env-status configured';
+            
+            if (AppState.privacyMode) {
+              // Mask sensitive information for privacy/demos
+              const maskedDomain = config.domain.substring(0, 2) + '***';
+              const maskedEmail = config.email.split('@')[0].substring(0, 2) + '***@' + config.email.split('@')[1];
+              messageEl.innerHTML = `✅ Configured for <strong>${maskedDomain}.atlassian.net</strong> (${maskedEmail})`;
+              addProcessingLog(`Configuration found for ${maskedDomain}.atlassian.net`, 'success');
+            } else {
+              // Show full information when privacy mode is off
+              messageEl.innerHTML = `✅ Configured for <strong>${config.domain}.atlassian.net</strong> (${config.email})`;
+              addProcessingLog(`Configuration found for ${config.domain}.atlassian.net`, 'success');
+            }
+            
+            // Auto-load projects when configuration is available
+            setTimeout(() => loadProjects(), 1000);
+            
+            return true;
+          } else {
+            statusEl.className = 'env-status not-configured';
+            messageEl.innerHTML = '⚠️ Environment not configured. Click "Override Config" to set up manually.';
+            addProcessingLog('No valid configuration found in environment', 'warning');
+            return false;
+          }
+        } catch (error) {
+          addProcessingLog(`Configuration check failed: ${error.message}`, 'error');
+          const statusEl = document.getElementById('env-status');
+          const messageEl = document.getElementById('env-message');
+          statusEl.className = 'env-status not-configured';
+          messageEl.innerHTML = '❌ Unable to check configuration. Server may be down.';
+          return false;
+        }
+      }
+
+      async function validateOllamaConnection() {
+        addProcessingLog('Checking Ollama AI service...');
+        
+        try {
+          const res = await fetch('/api/ollama-test');
+          const result = await res.json();
+          
+          if (result.running) {
+            addProcessingLog(`Ollama connected. Found ${result.models?.length || 0} models available`, 'success');
+            if (result.models?.length > 0) {
+              addProcessingLog(`Available models: ${result.models.join(', ')}`);
+            }
+            return true;
+          } else {
+            addProcessingLog('Ollama not running. Will use fallback enhancement', 'warning');
+            return false;
+          }
+        } catch (error) {
+          addProcessingLog(`Ollama check failed: ${error.message}`, 'warning');
+          return false;
+        }
+      }
+
+      // Enhancement functionality
+      async function enhanceStory() {
+        const rawStory = document.getElementById('raw-story').value.trim();
+        
+        if (!rawStory) {
+          showAlert('input-alert', '❌ Please enter your story idea first', 'error');
+          document.getElementById('raw-story').focus();
+          return;
+        }
+
+        if (AppState.processing) return;
+        AppState.processing = true;
+
+        // Ensure processing log is visible during enhancement
+        const logEl = document.getElementById('processing-log');
+        logEl.style.display = 'block';
+        const toggleBtn = document.getElementById('toggle-processing-logs');
+        toggleBtn.textContent = '👁️ Hide Processing Details';
+
+        const enhanceBtn = document.getElementById('btn-enhance');
+        const originalText = enhanceBtn.innerHTML;
+        enhanceBtn.disabled = true;
+        enhanceBtn.innerHTML = '<span class="spinner"></span>Enhancing with AI...';
+
+        // Clear and show processing logs
+        document.getElementById('processing-log').innerHTML = '';
+        if (!document.getElementById('processing-log').classList.contains('show')) {
+          toggleProcessingLogs();
+        }
+
+        addProcessingLog('Starting story enhancement process...');
+        
+        // Check configuration first
+        const configValid = await checkEnvConfig();
+        if (!configValid && !AppState.configOverridden) {
+          showAlert('input-alert', '⚠️ Configuration not found. Please set up your Jira credentials first.', 'warning');
+          enhanceBtn.disabled = false;
+          enhanceBtn.innerHTML = originalText;
+          AppState.processing = false;
+          document.getElementById('config-toggle').click();
+          return;
+        }
+
+        // Check Ollama
+        await validateOllamaConnection();
 
         try {
-          const res = await fetch('/api/create-issue', {
+          addProcessingLog('🤖 Checking AI engine availability...');
+          
+          // Check if Ollama is available before processing
+          const ollamaCheck = await fetch('/api/ollama-test');
+          const ollamaStatus = await ollamaCheck.json();
+          
+          if (ollamaStatus.running) {
+            addProcessingLog('✅ Using Ollama AI for enhanced story generation');
+          } else {
+            addProcessingLog('⚠️ Ollama not available - using fallback enhancement');
+          }
+          
+          addProcessingLog('Sending story to AI enhancement service...');
+          
+          const res = await fetch('/api/enhance', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ projectKey, summary, description, issueType }),
+            body: JSON.stringify({ 
+              title: '', 
+              description: rawStory 
+            }),
           });
 
           if (!res.ok) {
-            const error = await res.json();
-            throw new Error(error.error || 'Failed to create issue');
+            const errorData = await res.json().catch(() => ({ error: 'Unknown error occurred' }));
+            throw new Error(errorData.error || `Server returned ${res.status}`);
           }
 
-          const { issue } = await res.json();
+          const data = await res.json();
+          AppState.enhancedData = data;
+
+          addProcessingLog(`Enhancement completed using ${data.source}`, 'success');
+          addProcessingLog(`Generated title: "${data.enhancedTitle}"`);
+          addProcessingLog(`Generated description: ${data.enhancedDescription?.length} characters`);
+          
+          if (data.suggestedType) {
+            addProcessingLog(`Suggested issue type: ${data.suggestedType}`);
+          }
+
+          // Display original input
+          document.getElementById('original-input').innerHTML = `<strong>Original:</strong> ${data.originalInput || rawStory}`;
+
+          // Show original input for reference
+          const originalDisplay = document.getElementById('original-input-display');
+          if (originalDisplay) {
+            originalDisplay.textContent = rawStory;
+          }
+
+          // Fill the review form
+          document.getElementById('enhanced-summary').value = data.enhancedTitle || 'Generated title will appear here';
+          document.getElementById('enhanced-description').value = data.enhancedDescription || 'Generated description will appear here';
+          
+          // Auto-select suggested issue type
+          if (data.suggestedType) {
+            document.getElementById('issue-type').value = data.suggestedType;
+            addProcessingLog(`Auto-selected issue type: ${data.suggestedType}`);
+          }
+
+          // Move to review step
+          updateWorkflowStep('review');
+          
+          let alertMessage = `✅ Story enhanced successfully using ${data.source}!`;
+          if (data.suggestedType) {
+            alertMessage += ` Issue type auto-selected as "${data.suggestedType}".`;
+          }
+          alertMessage += ` Please review and configure before creating.`;
+          
+          showAlert('review-alert', alertMessage, 'success');
+
+        } catch (error) {
+          addProcessingLog(`Enhancement failed: ${error.message}`, 'error');
+          showAlert('input-alert', `❌ Enhancement failed: ${error.message}`, 'error');
+        } finally {
+          enhanceBtn.disabled = false;
+          enhanceBtn.innerHTML = originalText;
+          AppState.processing = false;
+        }
+      }
+
+      // Issue creation
+      async function createJiraIssue() {
+        if (!validateForm()) return;
+
+        if (AppState.processing) return;
+        AppState.processing = true;
+
+        const createBtn = document.getElementById('btn-create-issue');
+        const originalText = createBtn.innerHTML;
+        createBtn.disabled = true;
+        createBtn.innerHTML = '<span class="spinner"></span>Creating Issue...';
+
+        addProcessingLog('Starting Jira issue creation...');
+
+        try {
+          const projectKey = document.getElementById('project-key').value.trim();
+          const summary = document.getElementById('enhanced-summary').value;
+          const description = document.getElementById('enhanced-description').value;
+          const issueType = document.getElementById('issue-type').value;
+          const originalInput = document.getElementById('raw-story').value.trim();
+
+          addProcessingLog(`Creating ${issueType} in project ${projectKey}...`);
+
+          const res = await fetch('/api/create-issue', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ projectKey, summary, description, issueType, originalInput }),
+          });
+
+          if (!res.ok) {
+            const errorData = await res.json().catch(() => ({ error: 'Unknown error occurred' }));
+            throw new Error(errorData.error || `Server returned ${res.status}`);
+          }
+
+          const result = await res.json();
+          addProcessingLog(`Issue created successfully: ${result.issue.key}`, 'success');
+          addProcessingLog('✅ Original input added as comment for reference', 'success');
+
+          // Show success with privacy masking if enabled
+          const displayKey = AppState.privacyMode ? result.issue.key.substring(0, 3) + '***' : result.issue.key;
+          const displayProject = AppState.privacyMode ? projectKey.substring(0, 2) + '***' : projectKey;
+          const displayUrl = AppState.privacyMode ? result.issue.url.replace(projectKey, displayProject).replace(result.issue.key, displayKey) : result.issue.url;
 
           // Show success
           document.getElementById('success-container').innerHTML = `
-            <div class="success-message">
-              <h3>✅ Issue Created Successfully!</h3>
-              <p><strong>Key:</strong> ${issue.key}</p>
-              <p><strong>ID:</strong> ${issue.id}</p>
-              <a href="${issue.url}" target="_blank">Open in Jira →</a>
+            <h3>🎉 Jira Issue Created Successfully!</h3>
+            <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #28a745;">
+              <p><strong>Issue Key:</strong> <code style="background: #f8f9fa; padding: 2px 6px; border-radius: 4px;">${displayKey}</code></p>
+              <p><strong>Issue ID:</strong> ${AppState.privacyMode ? '***' : result.issue.id}</p>
+              <p><strong>Project:</strong> ${displayProject}</p>
+              <p><strong>Type:</strong> ${issueType}</p>
             </div>
+            <a href="${result.issue.url}" target="_blank" class="jira-link">
+              🔗 Open Issue in Jira
+            </a>
           `;
 
-          // Reset form
-          document.getElementById('project-key').value = '';
-          document.getElementById('summary').value = '';
-          document.getElementById('description').value = '';
-          document.getElementById('issue-type').value = '';
+          updateWorkflowStep('create');
+
         } catch (error) {
-          showAlert('create-alert', `❌ ${error.message}`, 'error');
+          addProcessingLog(`Issue creation failed: ${error.message}`, 'error');
+          showAlert('review-alert', `❌ Failed to create issue: ${error.message}`, 'error');
         } finally {
-          btn.disabled = false;
-          btn.innerHTML = 'Create Issue';
+          createBtn.disabled = false;
+          createBtn.innerHTML = originalText;
+          AppState.processing = false;
         }
-      });
+      }
 
-      // Reset form
-      document.getElementById('btn-reset-form').addEventListener('click', () => {
-        document.getElementById('project-key').value = '';
-        document.getElementById('summary').value = '';
-        document.getElementById('description').value = '';
-        document.getElementById('issue-type').value = '';
-        document.getElementById('success-container').innerHTML = '';
-      });
+      // Event listeners
+      // Check Ollama status
+      async function checkOllamaStatus() {
+        try {
+          addProcessingLog('🔍 Checking Ollama connection...');
+          const response = await fetch('/api/ollama-test');
+          const data = await response.json();
+          const statusEl = document.getElementById('ollama-status');
+          const messageEl = document.getElementById('ollama-message');
+          const retryBtn = document.getElementById('retry-ollama');
+          
+          if (data.running && data.phiAvailable) {
+            statusEl.className = 'ollama-status connected';
+            messageEl.innerHTML = `✅ Connected and ready with phi model (${data.models.length} models total)`;
+            retryBtn.style.display = 'none';
+            addProcessingLog('✅ Ollama AI engine is ready for enhanced story generation');
+          } else if (data.running && !data.phiAvailable) {
+            statusEl.className = 'ollama-status connected';
+            messageEl.innerHTML = `⚠️ Connected with ${data.models.length} models, but phi model missing. <a href="#" onclick="showOllamaHelp()">Install phi model</a>`;
+            retryBtn.style.display = 'none';
+            addProcessingLog(`⚠️ Ollama connected but needs phi model. Available: ${data.models.join(', ')}`);
+          } else {
+            statusEl.className = 'ollama-status disconnected';
+            messageEl.innerHTML = `❌ Not connected: ${data.error || 'Unknown error'}. <a href="#" onclick="showOllamaHelp()">Setup instructions</a>`;
+            retryBtn.style.display = 'inline-block';
+            addProcessingLog(`❌ Ollama not available: ${data.error || 'Connection failed'}`);
+          }
+        } catch (error) {
+          console.error('Error checking Ollama status:', error);
+          const statusEl = document.getElementById('ollama-status');
+          const messageEl = document.getElementById('ollama-message');
+          const retryBtn = document.getElementById('retry-ollama');
+          statusEl.className = 'ollama-status disconnected';
+          messageEl.innerHTML = '❌ Connection test failed';
+          retryBtn.style.display = 'inline-block';
+          addProcessingLog(`❌ Failed to test Ollama connection: ${error.message}`);
+        }
+      }
+      
+      function showOllamaHelp() {
+        const helpText = `🤖 Ollama Setup & Troubleshooting:\n\n🚀 INSTALLATION:\n1. Download Ollama from https://ollama.ai\n2. Install and restart your terminal\n3. Verify: ollama --version\n\n🔄 START SERVICE:\n1. Run: ollama serve\n2. Keep this terminal open\n3. Service runs on localhost:11434\n\n🤖 INSTALL PHI MODEL:\n1. In another terminal: ollama pull phi:latest\n2. Wait for download to complete\n3. Verify: ollama list\n\n🔍 TROUBLESHOOTING:\n1. Check if running: ps aux | grep ollama\n2. Check port: lsof -i :11434\n3. Test manually: curl http://localhost:11434/api/tags\n4. Restart if needed: killall ollama && ollama serve\n\n✨ Once setup is complete, click 'Retry Connection'`;
+        
+        alert(helpText);
+      }
+      
+      async function retryOllamaConnection() {
+        const retryBtn = document.getElementById('retry-ollama');
+        retryBtn.disabled = true;
+        retryBtn.textContent = 'Testing...';
+        
+        addProcessingLog('🔄 Manually retrying Ollama connection...');
+        
+        // Stop the automatic checking temporarily
+        clearInterval(ollamaCheckInterval);
+        
+        try {
+          await checkOllamaStatus();
+        } finally {
+          setTimeout(() => {
+            retryBtn.disabled = false;
+            retryBtn.textContent = 'Retry Connection';
+            // Resume automatic checking
+            startOllamaStatusCheck();
+          }, 2000);
+        }
+      }
 
-      // Load config on page load
-      loadConfig();
+      document.addEventListener('DOMContentLoaded', async function() {
+        // Initialize
+        addProcessingLog('Application initialized');
+        await checkEnvConfig();
+        
+        // Check Ollama status
+        checkOllamaStatus();
+        
+        // Recheck Ollama status every 30 seconds
+        setInterval(checkOllamaStatus, 30000);
+
+        // Story enhancement
+        document.getElementById('btn-enhance').addEventListener('click', enhanceStory);
+
+        // Navigation
+        document.getElementById('btn-back-to-input').addEventListener('click', () => {
+          updateWorkflowStep('input');
+        });
+
+        document.getElementById('btn-create-issue').addEventListener('click', createJiraIssue);
+
+        // Reset functionality
+        document.getElementById('btn-reset').addEventListener('click', () => {
+          if (confirm('Are you sure you want to reset all data? This cannot be undone.')) {
+            document.getElementById('raw-story').value = '';
+            document.getElementById('project-key').value = '';
+            document.getElementById('project-search').value = '';
+            document.getElementById('enhanced-summary').value = '';
+            document.getElementById('enhanced-description').value = '';
+            document.getElementById('issue-type').value = '';
+            document.getElementById('success-container').innerHTML = '';
+            document.getElementById('original-input').innerHTML = '';
+            AppState.enhancedData = null;
+            AppState.selectedProject = null;
+            updateWorkflowStep('input');
+            showAlert('input-alert', '🔄 All data has been reset', 'info', 3000);
+          }
+        });
+
+        document.getElementById('btn-create-another').addEventListener('click', () => {
+          document.getElementById('btn-reset').click();
+        });
+
+        // Privacy toggle
+        document.getElementById('privacy-toggle').addEventListener('click', (e) => {
+          e.preventDefault();
+          AppState.privacyMode = !AppState.privacyMode;
+          const toggleBtn = document.getElementById('privacy-toggle');
+          
+          if (AppState.privacyMode) {
+            toggleBtn.textContent = '🔒 Privacy ON';
+            toggleBtn.style.background = 'rgba(255,255,255,0.15)';
+            addProcessingLog('Privacy mode enabled - sensitive info will be masked');
+          } else {
+            toggleBtn.textContent = '👁️ Privacy OFF';
+            toggleBtn.style.background = 'rgba(255,0,0,0.2)';
+            addProcessingLog('Privacy mode disabled - full info will be shown', 'warning');
+          }
+          
+          // Refresh configuration display
+          checkEnvConfig();
+        });
+
+        // Configuration override
+        document.getElementById('config-toggle').addEventListener('click', (e) => {
+          e.preventDefault();
+          const configSection = document.getElementById('section-config');
+          if (configSection.style.display === 'none') {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            configSection.style.display = 'block';
+            configSection.classList.add('active');
+          } else {
+            configSection.style.display = 'none';
+            document.getElementById('section-input').classList.add('active');
+          }
+        });
+
+        document.getElementById('btn-cancel-config').addEventListener('click', () => {
+          document.getElementById('section-config').style.display = 'none';
+          document.getElementById('section-input').classList.add('active');
+        });
+
+        document.getElementById('btn-save-config').addEventListener('click', async () => {
+          const domain = document.getElementById('domain').value.trim();
+          const email = document.getElementById('email').value.trim();
+          const token = document.getElementById('token').value.trim();
+
+          if (!domain || !email || !token) {
+            showAlert('config-alert', '❌ Please fill in all configuration fields', 'error');
+            return;
+          }
+
+          const btn = document.getElementById('btn-save-config');
+          btn.disabled = true;
+          btn.innerHTML = '<span class="spinner"></span>Validating...';
+
+          try {
+            const res = await fetch('/api/config', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ domain, email, apiToken: token }),
+            });
+
+            if (!res.ok) {
+              const error = await res.json();
+              throw new Error(error.error || 'Validation failed');
+            }
+
+            AppState.configOverridden = true;
+            showAlert('config-alert', '✅ Configuration saved and validated!', 'success', 3000);
+            
+            setTimeout(() => {
+              document.getElementById('section-config').style.display = 'none';
+              document.getElementById('section-input').classList.add('active');
+              checkEnvConfig();
+              // Auto-load projects after successful config
+              setTimeout(() => loadProjects(), 500);
+            }, 2000);
+
+          } catch (error) {
+            showAlert('config-alert', `❌ ${error.message}`, 'error');
+          } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Save & Validate';
+          }
+        });
+
+        // Processing logs toggle
+        document.getElementById('toggle-processing-logs').addEventListener('click', toggleProcessingLogs);
+        
+        // Ollama retry button
+        document.getElementById('retry-ollama').addEventListener('click', retryOllamaConnection);
+
+        // Auto-resize textareas
+        document.querySelectorAll('textarea').forEach(textarea => {
+          textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 300) + 'px';
+          });
+        });
+
+        // Project search and dropdown functionality
+        const projectSearch = document.getElementById('project-search');
+        const projectDropdown = document.getElementById('project-dropdown');
+
+        projectSearch.addEventListener('focus', () => {
+          if (AppState.projects.length === 0) {
+            loadProjects();
+          }
+          projectDropdown.classList.add('show');
+        });
+
+        projectSearch.addEventListener('input', (e) => {
+          const searchTerm = e.target.value.trim();
+          if (searchTerm.length > 0) {
+            // If user is typing a custom value, clear selected project
+            if (!AppState.selectedProject || !searchTerm.includes(AppState.selectedProject.key)) {
+              document.getElementById('project-key').value = searchTerm.split(' ')[0]; // Use first word as key
+            }
+            filterProjects(searchTerm);
+          } else {
+            renderProjects(AppState.projects);
+          }
+          projectDropdown.classList.add('show');
+        });
+
+        projectSearch.addEventListener('blur', (e) => {
+          // Delay hiding to allow click on dropdown
+          setTimeout(() => {
+            if (!projectDropdown.contains(document.activeElement)) {
+              projectDropdown.classList.remove('show');
+            }
+          }, 150);
+        });
+
+        document.getElementById('refresh-projects').addEventListener('click', () => {
+          loadProjects(true);
+        });
+
+        // Click outside to close dropdown
+        document.addEventListener('click', (e) => {
+          if (!e.target.closest('.project-selector')) {
+            projectDropdown.classList.remove('show');
+          }
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.ctrlKey || e.metaKey) {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              if (AppState.currentStep === 'input') {
+                document.getElementById('btn-enhance').click();
+              } else if (AppState.currentStep === 'review') {
+                document.getElementById('btn-create-issue').click();
+              }
+            }
+          }
+        });
+      });
     </script>
   </body>
 </html>

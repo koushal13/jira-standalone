@@ -108,8 +108,36 @@ async function validateJiraConfig(config) {
 }
 
 /**
- * Get available issue types for a project
+ * Get user's accessible projects
  */
+async function getUserProjects(config) {
+  try {
+    const response = await axios.get(
+      `https://${config.domain}.atlassian.net/rest/api/3/project/search?expand=description,lead,projectCategory`,
+      {
+        headers: {
+          Authorization: createAuthHeader(config.email, config.apiToken),
+          Accept: 'application/json',
+        },
+      }
+    );
+
+    return response.data.values.map((project) => ({
+      key: project.key,
+      name: project.name,
+      id: project.id,
+      description: project.description || 'No description available',
+      projectTypeKey: project.projectTypeKey,
+      lead: project.lead?.displayName || 'Unknown',
+      avatarUrls: project.avatarUrls,
+      category: project.projectCategory?.name || 'Uncategorized',
+      url: `https://${config.domain}.atlassian.net/projects/${project.key}`,
+    }));
+  } catch (error) {
+    console.error('Failed to fetch user projects:', error.message);
+    return [];
+  }
+}
 async function getIssueTypes(config, projectKey) {
   try {
     const response = await axios.get(
@@ -132,8 +160,68 @@ async function getIssueTypes(config, projectKey) {
   }
 }
 
+/**
+ * Add a comment to an existing JIRA issue
+ * @param {Object} config - JIRA configuration (domain, email, apiToken)
+ * @param {string} issueKey - The issue key (e.g., 'PROJ-123')
+ * @param {string} comment - The comment text to add
+ * @returns {Promise<Object>} Comment creation result
+ */
+async function addCommentToIssue(config, issueKey, comment) {
+  if (!config.domain || !config.email || !config.apiToken) {
+    throw new Error('JIRA configuration is incomplete. Please check your settings.');
+  }
+
+  const commentEndpoint = `https://${config.domain}.atlassian.net/rest/api/3/issue/${issueKey}/comment`;
+
+  const commentPayload = {
+    body: {
+      version: 1,
+      type: 'doc',
+      content: [
+        {
+          type: 'paragraph',
+          content: [
+            {
+              type: 'text',
+              text: comment,
+            },
+          ],
+        },
+      ],
+    },
+  };
+
+  try {
+    const response = await axios.post(commentEndpoint, commentPayload, {
+      headers: {
+        Authorization: createAuthHeader(config.email, config.apiToken),
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return {
+      id: response.data.id,
+      created: response.data.created,
+    };
+  } catch (error) {
+    const errorData = error.response?.data;
+    const errorMessage = errorData?.errorMessages?.[0] || error.message || `Failed to add comment`;
+    
+    console.error('JIRA Comment Error:', {
+      status: error.response?.status,
+      errorData,
+    });
+    
+    throw new Error(`Failed to add comment to JIRA issue: ${errorMessage}`);
+  }
+}
+
 module.exports = {
   createJiraIssue,
   validateJiraConfig,
   getIssueTypes,
+  getUserProjects,
+  addCommentToIssue,
 };
